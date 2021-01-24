@@ -1,0 +1,99 @@
+- create workspace
+
+mkdir -p catkin_ws/src
+cd catkin_ws/src
+catkin_init_workspace
+cd catkin_ws
+catkin_make
+
+#optional
+echo "source /.../carkin_ws/deve/setup.bash" >> ~/.bashrc
+
+
+
+- create pkg
+
+catkin_create_pkg package_name [dependency1] [dependency2]
+
+
+
+- creating cpp node
+1 open CMakeLists.txt
+
+    # The following code snippet in this file is responsible for building these two nodes:
+
+    include_directories(
+        include
+        ${catkin_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+    )
+
+    open tag where generate_message ... !
+
+2 Add these lines
+#This will create executables of the nodes
+            
+                #optinal name            #created file name
+add_executable(demo_topic_publisher src/demo_topic_publisher.cpp)
+add_executable(demo_topic_subscriber src/demo_topic_subscriber.cpp)
+
+3 Add These Lines 
+#This will generate message header file before building the target
+                
+
+
+                 #added optinal name  #pkg name + generate_messages_cpp 
+add_dependencies(demo_topic_publisher mastering_ros_demo_pkg_generate_messages_cpp)
+add_dependencies(demo_topic_subscriber mastering_ros_demo_pkg_generate_messages_cpp)
+
+
+3 Add These Lines 
+
+#This will link executables to the appropriate libraries
+                      #OPTINAL NAMES 
+target_link_libraries(demo_topic_publisher ${catkin_LIBRARIES})
+target_link_libraries(demo_topic_subscriber ${catkin_LIBRARIES})
+
+4 catkin_make
+
+
+
+
+- IMPORT OPENCV BRIDGE ... !
+
+1 -
+
+    include_directories(
+        #include
+        ${OpenCV_INCLUDE_DIRS}
+        ${catkin_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+    )
+
+2 - 
+
+find_package(catkin REQUIRED COMPONENTS
+  actionlib
+  actionlib_msgs
+  roscpp
+  sensor_msgs
+  std_msgs
+  cv_bridge
+  image_transport
+
+)
+
+3 - 
+
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES mastering_ros_demo_pkg
+  CATKIN_DEPENDS actionlib actionlib_msgs roscpp std_msgs std_msgs cv_bridge image_transport
+  DEPENDS system_lib
+)
+
+4 - 
+find_package(OpenCV)
+add_executable(publisher_image src/publisher_image.cpp)
+add_dependencies(publisher_image mastering_ros_demo_pkg_generate_messages_cpp)
+target_link_libraries(publisher_image ${catkin_LIBRARIES} ${opencv})
